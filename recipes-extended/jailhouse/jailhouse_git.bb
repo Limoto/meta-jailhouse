@@ -20,6 +20,9 @@ SRC_URI = " \
 "
 
 DEPENDS = "virtual/kernel dtc-native python3-mako-native python3-mako make-native"
+
+DEPENDS_append_raspberrypi4 = " trusted-firmware-a"
+
 RDEPENDS_${PN} += "\
 	python3-curses\
 	python3-datetime\
