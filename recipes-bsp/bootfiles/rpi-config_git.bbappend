@@ -17,6 +17,11 @@ do_deploy_append_raspberrypi4() {
         echo "enable_gic=1" >> ${DEPLOYDIR}/bcm2835-bootfiles/config.txt
     fi
 
+
+    echo "# Enable CAN (Waveshare RS485 CAN HAT)" >> ${DEPLOYDIR}/bcm2835-bootfiles/config.txt
+    echo "dtoverlay=mcp2515-can0,oscillator=8000000,interrupt=25,spimaxfrequency=1000000" >> ${DEPLOYDIR}/bcm2835-bootfiles/config.txt
+
+
 }
 
 
