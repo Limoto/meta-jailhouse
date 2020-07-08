@@ -1,3 +1,6 @@
+LINUX_VERSION = "5.4.49"
+SRCREV = "ddf7285e0f880a993395a373e91339956de60f54"
+
 FILESEXTRAPATHS_prepend := "${THISDIR}/linux:"
 
 SRC_URI_append = " \
@@ -34,3 +37,4 @@ file://0030-ivshmem-net-Refactor-and-comment-ivshm_net_state_cha.patch \
 file://0031-ivshmem-net-Switch-to-netdev_xmit_more-helper.patch \
 file://0032-ivshmem-net-Adjust-to-reworked-version-of-ivshmem-in.patch \
 "
+
