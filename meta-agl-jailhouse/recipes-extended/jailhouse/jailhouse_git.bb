@@ -25,6 +25,7 @@ RDEPENDS_${PN} += "\
 	python3-curses\
 	python3-datetime\
 	python3-mmap\
+	python3-mako\
 "
 
 require jailhouse-arch.inc
