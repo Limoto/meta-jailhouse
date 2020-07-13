@@ -1,7 +1,6 @@
-LINUX_VERSION = "5.4.49"
-SRCREV = "ddf7285e0f880a993395a373e91339956de60f54"
-
 FILESEXTRAPATHS_prepend := "${THISDIR}/linux:"
+
+SRC_URI_append = " file://jailhouse.cfg"
 
 SRC_URI_append = " \
 file://0001-x86-jailhouse-Improve-setup-data-version-comparison.patch \
