@@ -11,22 +11,11 @@ LIC_FILES_CHKSUM = " \
 "
 
 SRCREV = "4ce7658dddfd5a1682a379d5ac46657e93fe1ff0"
-
 PV = "0.12+git${SRCPV}"
 
-SRC_URI = " \
-    git://github.com/siemens/jailhouse \
-    file://0001-tools-update-shebang-in-helper-scripts-for-python3.patch \
-"
+SRC_URI = "git://github.com/siemens/jailhouse"
 
-DEPENDS = "virtual/kernel dtc-native python3-mako-native python3-mako make-native"
-
-RDEPENDS_${PN} += "\
-	python3-curses\
-	python3-datetime\
-	python3-mmap\
-	python3-mako\
-"
+DEPENDS = "virtual/kernel dtc-native python3-mako-native make-native"
 
 require jailhouse-arch.inc
 inherit module python3native bash-completion setuptools3
@@ -37,29 +26,19 @@ B = "${S}"
 JH_DATADIR ?= "${datadir}/jailhouse"
 JH_EXEC_DIR ?= "${libexecdir}/jailhouse"
 CELL_DIR ?= "${JH_DATADIR}/cells"
-CELLCONF_DIR ?= "${JH_DATADIR}/configs"
 INMATES_DIR ?= "${JH_DATADIR}/inmates"
+DTS_DIR ?= "${JH_DATADIR}/cells/dts"
 
 JH_CELL_FILES ?= "*.cell"
 
-do_configure() {
-	if [ -d ${STAGING_DIR_HOST}/${CELLCONF_DIR} ]; 
-	then
-		cp ${STAGING_DIR_HOST}/${CELLCONF_DIR}/*.c ${S}/configs/
-	fi
-}
-
-#USER_SPACE_CFLAGS = '${CFLAGS} -DLIBEXECDIR=\\\"${libexecdir}\\\" \
-#                    -DJAILHOUSE_VERSION=\\\"$JAILHOUSE_VERSION\\\" \
-#                    -Wall -Wextra -Wmissing-declarations -Wmissing-prototypes -Werror \
-#                    -I../driver'
-
-TOOLS_SRC_DIR = "${S}/tools"
-
 EXTRA_OEMAKE = "ARCH=${JH_ARCH} CROSS_COMPILE=${TARGET_PREFIX} CC="${CC}" KDIR=${STAGING_KERNEL_BUILDDIR}"
 
+do_configure() {
+	sed -i '1s|#!/usr/bin/env python|#!/usr/bin/env python3|' ${B}/tools/${BPN}-*
+}
+
 do_compile() {
-	oe_runmake V=1
+	oe_runmake
 }
 
 do_install() {
@@ -77,29 +56,22 @@ do_install() {
 	install -d ${D}${INMATES_DIR}
 	install -m 0644 ${B}/inmates/demos/${JH_ARCH}/*.bin ${D}${INMATES_DIR}
 
+	if [ ${JH_ARCH}  != "x86" ]; then
+		install -d ${D}${DTS_DIR}
+		install -m 0644 ${B}/configs/${JH_ARCH}/dts/*.dtb ${D}${DTS_DIR}
+	fi
 }
 
-PACKAGE_BEFORE_PN = "kernel-module-jailhouse pyjailhouse ${PN}-tools"
+PACKAGE_BEFORE_PN = "kernel-module-jailhouse pyjailhouse ${PN}-tools ${PN}-demos"
 FILES_${PN} = "${base_libdir}/firmware ${libexecdir} ${sbindir} ${JH_DATADIR}"
 FILES_pyjailhouse = "${PYTHON_SITEPACKAGES_DIR}"
-FILES_${PN}-tools = "${libexecdir}/${BPN}/${BPN}-*"
+FILES_${PN}-tools = "${libexecdir}/${BPN}/${BPN}-* ${JH_DATADIR}/*.tmpl"
+FILES_${PN}-demos = "${JH_DATADIR}/ ${sbindir}/ivshmem-demo"
 
-RDEPENDS_${PN}-tools = "pyjailhouse python3-mmap python3-math python3-datetime python3-curses python3-compression"
-RDEPENDS_pyjailhouse = "python3-core python3-ctypes python3-fcntl python3-shell"
+RDEPENDS_${PN}-tools = "pyjailhouse python3-mmap python3-math python3-datetime python3-curses python3-compression python3-mako"
+RDEPENDS_pyjailhouse = "python3-core python3-ctypes python3-fcntl"
+RDEPENDS_${PN}-demos = "jailhouse"
 
 RRECOMMENDS_${PN} = "${PN}-tools"
 
-#INSANE_SKIP_${PN} = "ldflags"
-
 KERNEL_MODULE_AUTOLOAD += "jailhouse"
-
-# Any extra cells/inmates from external recipes/packages
-CELLS = ""
-
-python __anonymous () {
-    # Setup DEPENDS and RDEPENDS to included cells
-    cells = d.getVar('CELLS', True) or ""
-    for cell in cells.split():
-        d.appendVar('DEPENDS', ' ' + cell)
-        d.appendVar('RDEPENDS_${PN}', ' ' + cell)
-}
