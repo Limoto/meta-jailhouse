@@ -34,7 +34,7 @@ JH_CELL_FILES ?= "*.cell"
 EXTRA_OEMAKE = "ARCH=${JH_ARCH} CROSS_COMPILE=${TARGET_PREFIX} CC="${CC}" KDIR=${STAGING_KERNEL_BUILDDIR}"
 
 do_configure() {
-	sed -i '1s|#!/usr/bin/env python|#!/usr/bin/env python3|' ${B}/tools/${BPN}-*
+	sed -i '1s|^#!/usr/bin/env python$|#!/usr/bin/env python3|' ${B}/tools/${BPN}-*
 }
 
 do_compile() {
