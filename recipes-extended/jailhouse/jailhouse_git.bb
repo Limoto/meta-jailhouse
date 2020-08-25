@@ -13,7 +13,11 @@ LIC_FILES_CHKSUM = " \
 SRCREV = "4ce7658dddfd5a1682a379d5ac46657e93fe1ff0"
 PV = "0.12+git${SRCPV}"
 
-SRC_URI = "git://github.com/siemens/jailhouse"
+FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+
+SRC_URI = "git://github.com/siemens/jailhouse \
+           file://0001-configs-arm64-Add-support-for-RPi4-with-more-than-1G.patch \
+           "
 
 DEPENDS = "virtual/kernel dtc-native python3-mako-native make-native"
 

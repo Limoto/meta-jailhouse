@@ -1,4 +1,6 @@
-LINUX_VERSION = "5.4.51"
-SRCREV = "2c8ec3bb4403a7c76c22ec6d3d5fc4b2a366024e"
+FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-require recipes-kernel/linux/linux-jailhouse-5.4.inc
+TOADD := "${@bb.utils.contains('ENABLE_JAILHOUSE', '1', 'file://0001-dt-dtoverlays-Add-jailhouse-memory-DT-overlay.patch', '', d)}"
+SRC_URI += "${TOADD}"
+
+require ${@bb.utils.contains('ENABLE_JAILHOUSE', '1', 'recipes-kernel/linux/linux-jailhouse-5.4.inc', '', d)}
